@@ -5,17 +5,10 @@
   (and (> (+ a b) c) (> (+ a c) b) (> (+ b c) a)))
 
 (defn- to-triple [^String line]
-  "Turns line into 3-vector"
-  (let [[a b c] (re-seq #"\d+" line)]
-    [(Long/parseLong a) (Long/parseLong b) (Long/parseLong c)]))
-
-(defn- to-triples [^String input]
-  "Turns each line into a 3-vector, returns seq of those"
-  (let [lines (str/split input #"\R+")]
-    (map to-triple lines)))
+  (take 3 (map #(Long/parseLong %) (re-seq #"\d+" line))))
 
 (defn day3-1 [^String input]
-  (->> (to-triples input)
+  (->> (map to-triple (str/split input #"\R+"))
        (filter valid-triangle)
        (count)))
 
@@ -27,7 +20,7 @@
   [[a1 a2 a3] [b1 b2 b3] [c1 c2 c3]])
 
 (defn day3-2 [^String input]
-  (->> (to-triples input)
+  (->> (map to-triple (str/split input #"\R+"))
        (partition 3)
        (mapcat transpose)
        (filter valid-triangle)

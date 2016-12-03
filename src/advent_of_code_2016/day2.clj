@@ -3,6 +3,7 @@
 
 (def keypad-size 3)
 
+; These all take/return 1-indexed positions
 (defn- row [pos] (quot (dec pos) keypad-size))
 (defn- col [pos] (mod (dec pos) keypad-size))
 
