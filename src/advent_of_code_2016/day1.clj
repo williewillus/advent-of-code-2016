@@ -1,23 +1,10 @@
 (ns advent-of-code-2016.day1)
 
-(defn- north [[x y] amount] [x (+ y amount)])
-(defn- south [[x y] amount] [x (- y amount)])
-(defn- east [[x y] amount] [(+ x amount) y])
-(defn- west [[x y] amount] [(- x amount) y])
+; unit vecs for north, east, south, west
+(def directions [[0 1] [1 0] [0 -1] [-1 0]])
 
-(defn- ccw [dir]
-  (condp = dir
-    north west
-    west south
-    south east
-    east north))
-
-(defn- cw [dir]
-  (condp = dir
-    north east
-    east south
-    south west
-    west north))
+(defn- cw [dir] (mod (inc dir) 4))
+(defn- ccw [dir] (mod (dec dir) 4))
 
 ; "L1" => [ccw 1]
 (defn- convert-stringop [strop]
@@ -30,12 +17,11 @@
 (defn- as-ops [^String input]
   (map convert-stringop (re-seq #"[LR]\d+" input)))
 
-(defn- move [[dir coord] op]
-  (let [newdir ((first op) dir)
-        amount (second op)]
-    ; cheating with the function symbols feels a bit out of hand here
-    [newdir (newdir coord amount)]))
+(defn- move [[dir coord] [rotate amount]]
+  (let [newdir  (rotate dir)
+        movevec (map (partial * amount) (nth directions newdir))]
+    [newdir (map + coord movevec)]))
 
 (defn day1-1 [^String input]
-  (let [[x y] (second (reduce move [north [0 0]] (as-ops input)))]
+  (let [[x y] (second (reduce move [0 [0 0]] (as-ops input)))]
     (+ (Math/abs x) (Math/abs y))))
