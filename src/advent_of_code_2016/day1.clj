@@ -25,3 +25,16 @@
 (defn day1-1 [^String input]
   (let [[x y] (second (reduce move [0 [0 0]] (as-ops input)))]
     (+ (Math/abs x) (Math/abs y))))
+
+(defn day1-2 [^String input]
+  (let [path (map second (reductions move [0 [0 0]] (as-ops input)))
+        [x y] (loop [seen #{}
+                    [pos & ps] path]
+                ;(println pos)
+                ;(println (first ps))
+                ;(println (contains? seen (first ps)))
+                (if (or (nil? ps) (contains? seen (first ps)))
+                  pos
+                  (recur (conj seen pos) ps)))]
+    (println x y)
+    (+ (Math/abs x) (Math/abs y))))
