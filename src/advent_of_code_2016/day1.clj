@@ -19,12 +19,14 @@
     south west
     west north))
 
+; "L1" => [ccw 1]
 (defn- convert-stringop [strop]
   [(condp = (first strop)
      \L ccw
      \R cw)
    (Long/parseLong (subs strop 1))])
 
+; Takes the input string and converts to seq of [ccw|cw amount] pairs
 (defn- as-ops [^String input]
   (map convert-stringop (re-seq #"[LR]\d+" input)))
 
