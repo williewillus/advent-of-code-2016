@@ -8,7 +8,7 @@
 
 ; "L1" => [ccw 1]
 (defn- convert-stringop [strop]
-  [(condp = (first strop)
+  [(case (first strop)
      \L ccw
      \R cw)
    (Long/parseLong (subs strop 1))])

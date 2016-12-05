@@ -14,7 +14,7 @@
 (defn- right [pos] (if (= (col pos) (- keypad-size 1)) pos (inc pos)))
 
 (defn- calc-pos [pos op]
-  (condp = op
+  (case op
     \U (up pos)
     \D (down pos)
     \L (left pos)
