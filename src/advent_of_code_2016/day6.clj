@@ -3,11 +3,8 @@
 
 (def input-len 8)
 
-(defn- max-val-key [m]
-  (key (reduce #(if (> (second %2) (second %1)) %2 %1) [nil Long/MIN_VALUE] m)))
-
-(defn- min-val-key [m]
-  (key (reduce #(if (< (second %2) (second %1)) %2 %1) [nil Long/MAX_VALUE] m)))
+(defn- max-val-key [m] (key (first (sort-by val #(compare %2 %1) m))))
+(defn- min-val-key [m] (key (first (sort-by val m))))
 
 (defn- solve [input key-extractor]
   (let [lines (str/split-lines input)]
