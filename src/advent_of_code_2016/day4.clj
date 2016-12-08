@@ -9,10 +9,11 @@
 (defn valid
   [[name sector hash]]
   (let [freq (frequencies name)
-        sort-letters (sort-by (juxt freq identity) #(compare %2 %1) name)] ; sort first by frequency then natural ordering (todo)
+        sort-letters (sort-by (juxt freq identity) #(compare %2 %1) (distinct name))]
+        ; first sort by descending freq, then by forward natural order (todo)
     (println "freq" freq)
-    (println "letters" (distinct sort-letters))
-    (= hash (apply str (distinct sort-letters)))))
+    (println "letters" sort-letters)
+    (= hash (apply str sort-letters))))
 
 (defn day4-1 [^String input]
   (->> (str/split-lines input)
