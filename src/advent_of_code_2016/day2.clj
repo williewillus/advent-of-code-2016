@@ -1,7 +1,7 @@
 (ns advent-of-code-2016.day2
   (:require [clojure.string :as str]))
 
-(def keypad-size 3)
+(def ^:private keypad-size 3)
 
 ; row/col work on 0-based indices
 (defn- row [pos] (quot (dec pos) keypad-size))

@@ -1,7 +1,7 @@
 (ns advent-of-code-2016.day1)
 
 ; unit vecs for north, east, south, west
-(def directions [[0 1] [1 0] [0 -1] [-1 0]])
+(def ^:private directions [[0 1] [1 0] [0 -1] [-1 0]])
 
 (defn- cw [dir] (mod (inc dir) 4))
 (defn- ccw [dir] (mod (dec dir) 4))

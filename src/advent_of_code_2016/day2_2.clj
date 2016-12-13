@@ -1,8 +1,9 @@
 (ns advent-of-code-2016.day2-2
   (:require [clojure.string :as str]))
 
-(def keypad-size 5)
-(def fancy-keypad [nil nil 1 nil nil
+(def ^:private keypad-size 5)
+(def ^:private
+     fancy-keypad [nil nil 1 nil nil
                    nil  2  3  4  nil
                    5    6  7  8   9
                    nil  \A \B \C nil
