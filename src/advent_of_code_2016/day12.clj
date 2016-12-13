@@ -22,6 +22,7 @@
                   (update state :pc (partial + (Long/parseLong r2)))
                   (inc-pc state)))))))
 
+; todo separate decode and evaluation stages? memoizing decode is kinda cheating
 (def ^:private decode (memoize do-decode))
 
 (defn- solve [^String input init-state]
