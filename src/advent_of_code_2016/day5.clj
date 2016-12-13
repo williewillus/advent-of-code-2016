@@ -1,29 +1,26 @@
 (ns advent-of-code-2016.day5
   (:import (java.security MessageDigest)))
 
-(def ^:private md5 (MessageDigest/getInstance "MD5"))
 (def ^:private hex-digits [\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \a \b \c \d \e \f])
 (def ^:private magic "wtnhxymk")
 
 ; returns md5 digest if interesting, nil otherwise
 (defn- interesting-hash [to-hash]
-  (.reset md5)
-  (.update md5 (.getBytes (str magic to-hash)))
-
-  (let [digest (.digest md5)]
-    ; the textual hash starts with 5 zeroes if the first 20 bits are 0
-    ; first 20 bits => first 2 bytes (16 bits) and top half (4 bits) of the third
-    (when
-      (and
-        (zero? (first digest))
-        (zero? (second digest))
-        (zero? (bit-and (unsigned-bit-shift-right (nth digest 2) 4) 0xF)))
-      digest)))
+  (let [md5 (MessageDigest/getInstance "MD5")]
+    (let [digest (.digest md5 (.getBytes (str magic to-hash)))]
+      ; the textual hash starts with 5 zeroes if the first 20 bits are 0
+      ; first 20 bits => first 2 bytes (16 bits) and top half (4 bits) of the third
+      (when
+        (and
+          (zero? (first digest))
+          (zero? (second digest))
+          (zero? (bit-and (unsigned-bit-shift-right (nth digest 2) 4) 0xF)))
+        digest))))
 
 (defn day5-1 []
   (->>
     (range)
-    (map interesting-hash)
+    (pmap interesting-hash) ; this runs 2x faster than map, but still not satisfied, spawning new thread for 1 md5 hash doesn't seem smart..
     (filter #(not (nil? %)))
     (map #(nth hex-digits (bit-and (nth % 2) 0xF)))
     (take 8)))
