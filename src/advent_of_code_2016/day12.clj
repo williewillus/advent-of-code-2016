@@ -26,7 +26,7 @@
 (def ^:private decode (memoize do-decode))
 
 (defn- solve [^String input init-state]
-  (let [lines (str/split-lines input)
+  (let [lines (str/split input #"\R+")
         program-len (count lines)]
     (loop [{pc :pc :as state} init-state]
       (if (>= pc program-len)

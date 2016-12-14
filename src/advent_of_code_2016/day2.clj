@@ -25,4 +25,4 @@
   (reduce calc-pos start-pos line))
 
 (defn day2-1 [^String input]
-  (reduce process-line 5 (str/split-lines input)))
+  (reduce process-line 5 (str/split input #"\R+")))

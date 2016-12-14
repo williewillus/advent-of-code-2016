@@ -29,7 +29,7 @@
   [(apply str (map #(if (= % \-) \space (rotate % sector)) name)) sector hash])
 
 (defn day4-2 [^String input]
-  (->> (str/split-lines input)
+  (->> (str/split input #"\R+")
        (map to-info)
        (filter valid)
        (map decipher)

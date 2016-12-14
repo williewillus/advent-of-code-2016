@@ -45,5 +45,5 @@
   (reduce calc-pos start-pos line))
 
 (defn day2-2 [^String input]
-  (nth fancy-keypad (reduce process-line 10 (str/split-lines input))))
+  (nth fancy-keypad (reduce process-line 10 (str/split input #"\R+"))))
 

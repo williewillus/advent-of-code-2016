@@ -7,7 +7,7 @@
 (defn- min-val-key [m] (key (first (sort-by val m))))
 
 (defn- solve [input key-extractor]
-  (let [lines (str/split-lines input)]
+  (let [lines (str/split input #"\R+")]
     (doseq [n (range input-len)]
       (println (key-extractor (frequencies (map #(nth % n) lines)))))))
 
