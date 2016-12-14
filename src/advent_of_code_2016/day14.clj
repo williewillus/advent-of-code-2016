@@ -5,10 +5,8 @@
 (def ^:private magic "ahsbgdzn")
 
 (defn- md5-to-string [^bytes b]
-  (let [upper (.getLong (ByteBuffer/wrap b 0 8))
-        lower (.getLong (ByteBuffer/wrap b 8 8))]
-    (str (Long/toUnsignedString upper 16)
-         (Long/toUnsignedString lower 16))))
+  (let [bint (BigInteger. 1 b)]
+    (format "%x" bint)))
 
 (defn- md5-hash [^String s]
   (->> (.getBytes s)
@@ -35,5 +33,4 @@
            (some #(contains? % triple))))))
 
 (defn day14-1 []
-  ; todo (off by one?)
-  (take 65 (filter is-key (range))))
+  (take 64 (filter is-key (range))))
