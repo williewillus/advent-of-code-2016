@@ -3,7 +3,6 @@
            (java.security MessageDigest)))
 
 (def ^:private magic "ahsbgdzn")
-(def ^:private md5 (MessageDigest/getInstance "MD5"))
 
 (defn- md5-to-string [^bytes b]
   (let [upper (.getLong (ByteBuffer/wrap b 0 8))
@@ -12,19 +11,19 @@
          (Long/toUnsignedString lower 16))))
 
 (defn- md5-hash [^String s]
-  (.reset md5)
-  (.update md5 (.getBytes s))
-  (md5-to-string (.digest md5)))
+  (->> (.getBytes s)
+       (.digest (MessageDigest/getInstance "MD5"))
+       (md5-to-string)))
 
 (def ^:private get-info
   (memoize
     (fn [idx]
       ; given an idx, hashes magic+idx then returns
-      ; 1: first char that appears 3 in a row
+      ; 1: first char that appears 3 in a row (or nil)
       ; 2: set of what chars appear 5 in a row
       (let [h (md5-hash (str magic idx))]
-        [(first (ffirst (re-seq #"([a-f\d])\1\1" h)))
-         (into #{} (map ffirst (re-seq #"([a-f\d])\1\1\1\1" h)))]))))
+        [(first (ffirst (re-seq #"([a-f\d])\1{2}" h)))
+         (into #{} (map ffirst (re-seq #"([a-f\d])\1{4}" h)))]))))
 
 (defn- is-key [idx]
   (let [[triple _] (get-info idx)]
