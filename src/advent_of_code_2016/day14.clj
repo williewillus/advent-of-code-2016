@@ -29,7 +29,7 @@
   (let [[triple _] (get-info idx)]
     (and
       (some? triple)
-      (->> (range (inc idx) (+ idx 1002))
+      (->> (range (inc idx) (+ idx 1001))
            (map get-info)
            (map second)
            (some #(contains? % triple))))))
