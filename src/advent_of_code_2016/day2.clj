@@ -1,4 +1,4 @@
-(ns advent-of-code-2016.day2-2
+(ns advent-of-code-2016.day2
   (:require [clojure.string :as str]))
 
 (def ^:private fancy-keypad
