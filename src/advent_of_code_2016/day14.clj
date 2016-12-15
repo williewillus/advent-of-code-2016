@@ -3,15 +3,16 @@
            (java.security MessageDigest)))
 
 (def ^:private magic "ahsbgdzn")
+(def ^:private ^:dynamic *zero-pad* false)
 
-(defn- md5-hash [zero-pad ^String s]
+(defn- md5-hash [^String s]
   (->> (.getBytes s)
        (.digest (MessageDigest/getInstance "MD5"))
        (BigInteger. 1)
-       (format (if zero-pad "%032x" "%x"))))
+       (format (if *zero-pad* "%032x" "%x"))))
 
 (defn- many-hash [^String init]
-  (nth (iterate (partial md5-hash true) init) 2017))
+  (nth (iterate md5-hash init) 2017))
 
 (def ^:private get-info
   (memoize
@@ -33,7 +34,9 @@
            (some #(contains? % triple))))))
 
 (defn day14-1 []
-  (nth (filter (partial is-key (partial md5-hash false)) (range)) 63))
+  (binding [*zero-pad* false]
+    (nth (filter (partial is-key md5-hash) (range)) 63)))
 
 (defn day14-2 []
-  (nth (filter (partial is-key many-hash) (range)) 63))
+  (binding [*zero-pad* true]
+    (nth (filter (partial is-key many-hash) (range)) 63)))
