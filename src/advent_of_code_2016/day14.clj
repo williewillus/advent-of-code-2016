@@ -4,17 +4,14 @@
 
 (def ^:private magic "ahsbgdzn")
 
-(defn- md5-to-string [^bytes b]
-  (let [bint (BigInteger. 1 b)]
-    (format "%032x" bint)))
-
-(defn- md5-hash [^String s]
+(defn- md5-hash [zero-pad ^String s]
   (->> (.getBytes s)
        (.digest (MessageDigest/getInstance "MD5"))
-       (md5-to-string)))
+       (BigInteger. 1)
+       (format (if zero-pad "%032x" "%x"))))
 
 (defn- many-hash [^String init]
-  (nth (iterate md5-hash init) 2017))
+  (nth (iterate (partial md5-hash true) init) 2017))
 
 (def ^:private get-info
   (memoize
@@ -36,7 +33,7 @@
            (some #(contains? % triple))))))
 
 (defn day14-1 []
-  (take 64 (filter (partial is-key md5-hash) (range))))
+  (nth (filter (partial is-key (partial md5-hash false)) (range)) 63))
 
 (defn day14-2 []
-  (take 64 (filter (partial is-key many-hash) (range))))
+  (nth (filter (partial is-key many-hash) (range)) 63))
