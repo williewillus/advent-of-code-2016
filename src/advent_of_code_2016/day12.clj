@@ -1,7 +1,7 @@
 (ns advent-of-code-2016.day12
   (:require [clojure.string :as str]))
 
-(defn- do-decode [^String insn]
+(defn- decode [^String insn]
   (let [[op r1 r2] (str/split insn #"\s+")
         inc-pc (fn [state] (update state :pc inc))]
     (case op
@@ -22,16 +22,15 @@
                   (update state :pc (partial + (Long/parseLong r2)))
                   (inc-pc state)))))))
 
-; todo separate decode and evaluation stages? memoizing decode is kinda cheating
-(def ^:private decode (memoize do-decode))
-
 (defn- solve [^String input init-state]
   (let [lines (str/split input #"\R+")
-        program-len (count lines)]
+        program-len (count lines)
+        insns (map decode lines)]
     (loop [{pc :pc :as state} init-state]
       (if (>= pc program-len)
         state
-        (recur ((decode (nth lines pc)) state))))))
+        (recur ((nth insns pc) state))))))
 
 (defn day12-1 [^String input] (solve input {:a 0 :b 0 :c 0 :d 0 :pc 0}))
+
 (defn day12-2 [^String input] (solve input {:a 0 :b 0 :c 1 :d 0 :pc 0}))
