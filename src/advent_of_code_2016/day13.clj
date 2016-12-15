@@ -4,8 +4,8 @@
 (def ^:private magic 1364)
 
 (defn- tile-type [[x y]]
-  (let [proc (+ (* x x) (* 3 x) (* 2 x y) y (* y y) magic)]
-    (if (even? (Integer/bitCount proc))
+  (let [hash (+ (* x x) (* 3 x) (* 2 x y) y (* y y) magic)]
+    (if (even? (Integer/bitCount hash))
       :open
       :wall)))
 
@@ -14,7 +14,7 @@
         yp (inc y) yn (dec y)]
     (->> [[xp y] [x yn] [xn y] [x yp]]
          (remove #(some neg? %))
-         (filter (fn [pos] (= :open (tile-type pos)))))))
+         (filter #(= :open (tile-type %))))))
 
 ; Dijkstra in Clojure adapted from http://www.ummels.de/2014/06/08/dijkstra-in-clojure/
 

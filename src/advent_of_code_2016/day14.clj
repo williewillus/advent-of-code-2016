@@ -3,6 +3,7 @@
            (java.security MessageDigest)))
 
 (def ^:private magic "ahsbgdzn")
+
 (def ^:private ^:dynamic *zero-pad* false)
 
 (defn- md5-hash [^String s]

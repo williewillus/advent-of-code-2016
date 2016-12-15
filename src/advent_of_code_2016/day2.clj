@@ -2,17 +2,18 @@
   (:require [clojure.string :as str]))
 
 (def ^:private fancy-keypad
-  [nil nil 1 nil nil
-   nil  2  3  4  nil
-   5    6  7  8   9
+  [nil nil \1 nil nil
+   nil  \2 \3 \4  nil
+   \5   \6 \7 \8  \9
    nil  \A \B \C nil
    nil nil \D nil nil])
 
 (def ^:private basic-keypad
-  [1 2 3
-   4 5 6
-   7 8 9])
+  [\1 \2 \3
+   \4 \5 \6
+   \7 \8 \9])
 
+; assuming square keypads :P
 (defn- keypad-size [kp] (int (Math/sqrt (count kp))))
 
 (defn- row [kp pos] (quot pos (keypad-size kp)))
@@ -54,8 +55,11 @@
   (reduce (partial calc-pos kp) start-pos line))
 
 (defn- solve [kp start-idx input]
-  (map (partial nth kp)
-       (rest (reductions (partial process-line kp) start-idx (str/split input #"\R+")))))
+  (->> (str/split input #"\R+")
+       (reductions (partial process-line kp) start-idx)
+       (drop 1)
+       (map (partial nth kp))
+       (apply str)))
 
 (defn day2-1 [^String input] (solve basic-keypad 4 input))
 

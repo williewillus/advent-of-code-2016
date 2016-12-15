@@ -1,8 +1,7 @@
 (ns advent-of-code-2016.day4
   (:require [clojure.string :as str]))
 
-; Clears cruft out of the line and converts types
-(defn- to-info [^String line]
+(defn- parse [^String line]
   (let [[ln name sector hash] (re-find #"([a-z\-]+)-(\d+)\[([a-z]+)\]" line)]
     [name (Long/parseLong sector) hash]))
 
@@ -16,7 +15,7 @@
 
 (defn day4-1 [^String input]
   (->> (str/split-lines input)
-       (map to-info)
+       (map parse)
        (filter valid)
        (map second) ; Get the sector num
        (reduce +)))
@@ -30,7 +29,7 @@
 
 (defn day4-2 [^String input]
   (->> (str/split input #"\R+")
-       (map to-info)
+       (map parse)
        (filter valid)
        (map decipher)
        (filter #(str/includes? (first %) "north"))))
