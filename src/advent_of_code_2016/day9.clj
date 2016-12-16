@@ -15,8 +15,7 @@
                                  (recur (inc cursor) (inc len) state marker-acc))
 
             :in-marker (if (= ch \))
-                                   (let [[amt rpt] (str/split (apply str marker-acc) #"x")
-                                         amount (Long/parseLong amt)
-                                         repeat (Long/parseLong rpt)]
-                                     (recur (+ cursor (inc amount)) (+ len (* amount repeat)) :default []))
+                                   (let [[amt rpt] (map #(Long/parseLong %)
+                                                        (str/split (apply str marker-acc) #"x"))]
+                                     (recur (+ cursor (inc amt)) (+ len (* amt rpt)) :default []))
                                    (recur (inc cursor) len state (conj marker-acc ch)))))))))

@@ -4,10 +4,8 @@
 (defn- parse-input [lines]
   (reduce
     (fn [acc line]
-      (let [[[_ index pos init]] (re-seq #"Disc #(\d+) has (\d+) positions; at time=0, it is at position (\d+)\." line)
-            idx (Long/parseLong index)
-            start (Long/parseLong init)
-            period (Long/parseLong pos)]
+      (let [[idx period start] (map #(Long/parseLong %)
+                                      (rest (re-find #"Disc #(\d+) has (\d+) positions; at time=0, it is at position (\d+)\." line)))]
         (conj acc #(zero? (mod (+ idx start %) period)))))
     [] lines))
 

@@ -22,7 +22,7 @@
       ; 1: first char that appears 3 in a row (or nil)
       ; 2: set of what chars appear 5 in a row
       (let [h (hasher (str magic idx))]
-        [(first (ffirst (re-seq #"([a-f\d])\1{2}" h)))
+        [(ffirst (re-find #"([a-f\d])\1{2}" h))
          (into #{} (map ffirst (re-seq #"([a-f\d])\1{4}" h)))]))))
 
 (defn- is-key [hasher idx]
