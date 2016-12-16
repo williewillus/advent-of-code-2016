@@ -9,17 +9,15 @@
 (defn- checksum [data]
   (map (fn [[x y]] (= x y)) (partition 2 data)))
 
-(defn- truncate-dragon [input required-size]
-  (let [data (first (drop-while #(< (count %) required-size)
-                                (iterate dragon input)))]
-    (println "got data")
-    (take required-size data)))
-
 (defn- solve [required-size]
-  (let [data (truncate-dragon input required-size)
-        check (first (drop-while #(even? (count %))
-                                 (iterate checksum data)))]
-    (println "checksum:" (apply str (map #(if % \1 \0) check)))))
+  (let [data (->> (iterate dragon input)
+                  (drop-while #(< (count %) required-size))
+                  (first)
+                  (take required-size))
+        check (->> (iterate checksum data)
+                   (drop-while #(even? (count %)))
+                   (first))]
+    (apply str (map #(if % \1 \0) check))))
 
 (defn- day16-1 [] (solve 272))
 
