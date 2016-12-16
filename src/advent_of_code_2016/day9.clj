@@ -9,16 +9,14 @@
       (if (>= cursor (count input))
         len
         (let [ch (nth input cursor)]
-          (cond
-            (= state :default) (if (= ch \()
-                                 (recur (inc cursor) len :in-marker [])
+          (case state
+            :default (if (= ch \()
+                                 (recur (inc cursor) len :in-marker marker-acc)
                                  (recur (inc cursor) (inc len) state marker-acc))
 
-            (= state :in-marker) (if (= ch \))
+            :in-marker (if (= ch \))
                                    (let [[amt rpt] (str/split (apply str marker-acc) #"x")
                                          amount (Long/parseLong amt)
                                          repeat (Long/parseLong rpt)]
                                      (recur (+ cursor (inc amount)) (+ len (* amount repeat)) :default []))
-                                   (recur (inc cursor) len state (conj marker-acc ch)))
-
-            :else (throw (IllegalStateException. "boo"))))))))
+                                   (recur (inc cursor) len state (conj marker-acc ch)))))))))
