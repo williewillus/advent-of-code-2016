@@ -19,6 +19,6 @@
                    (first))]
     (apply str (map #(if % \1 \0) check))))
 
-(defn- day16-1 [] (solve 272))
+(defn day16-1 [] (solve 272))
 
-(defn- day16-2 [] (solve 35651584))
+(defn day16-2 [] (solve 35651584))
