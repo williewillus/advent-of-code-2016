@@ -19,7 +19,6 @@
   (let [data (truncate-dragon input required-size)
         check (first (drop-while #(even? (count %))
                                  (iterate checksum data)))]
-    (println "data:" (apply str (map #(if % \1 \0) data)))
     (println "checksum:" (apply str (map #(if % \1 \0) check)))))
 
 (defn- day16-1 [] (solve 272))
