@@ -9,17 +9,16 @@
 (defn- checksum [data]
   (map (fn [[x y]] (= x y)) (partition 2 data)))
 
-(defn- repeat-dragon [input required-size]
-  (let [data (some #(when (>= (count %) required-size) %)
-                   (iterate dragon input))
-        truncate (take required-size data)]
+(defn- truncate-dragon [input required-size]
+  (let [data (first (drop-while #(< (count %) required-size)
+                                (iterate dragon input)))]
     (println "got data")
     (take required-size data)))
 
 (defn- solve [required-size]
-  (let [data (repeat-dragon input required-size)
-        check (some #(when (odd? (count %)) %)
-                    (iterate checksum data))]
+  (let [data (truncate-dragon input required-size)
+        check (first (drop-while #(even? (count %))
+                                 (iterate checksum data)))]
     (println "data:" (apply str (map #(if % \1 \0) data)))
     (println "checksum:" (apply str (map #(if % \1 \0) check)))))
 
