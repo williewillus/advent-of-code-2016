@@ -14,7 +14,7 @@
     (= hash (apply str (take 5 sort-letters)))))
 
 (defn day4-1 [^String input]
-  (->> (str/split-lines input)
+  (->> (str/split input #"\R+")
        (map parse)
        (filter valid)
        (map second) ; Get the sector num

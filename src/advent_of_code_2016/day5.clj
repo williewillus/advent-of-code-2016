@@ -26,7 +26,7 @@
   (->>
     (range)
     (map interesting-hash)
-    (filter #(not (nil? %)))
+    (filter some?)
     (map #(nth hex-digits (bit-and (nth % 2) 0xF)))
     (take 8)))
 
