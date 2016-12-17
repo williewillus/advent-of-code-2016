@@ -7,7 +7,7 @@
 
 (def ^:private present \u2588)
 
-(def ^:private absent \.)
+(def ^:private absent \space)
 
 (defn- rect [w h state]
   (map-indexed
@@ -23,7 +23,7 @@
         old-col (map #(nth % c) state)
         rotated-col (concat (take-last shift old-col) (drop-last shift old-col))]
     (into [] (map-indexed (fn [rownum row]
-                            (update row c (fn [_] (nth rotated-col rownum))))
+                            (assoc row c (nth rotated-col rownum)))
                           state))))
 
 (defn- rot-row [r s state]
