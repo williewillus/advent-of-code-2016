@@ -4,10 +4,10 @@
 
 (def ^:private ^booleans input (boolean-array (map #(= \1 %) "11110010111001001")))
 
-(set! *warn-on-reflection* true)
+; (set! *warn-on-reflection* true)
 
 (defn- dragon [^booleans xs]
-  ; Imperative version of: (concat xs false (map not (reverse xs)))
+  ; Imperative version of: (concat xs [false] (map not (reverse xs)))
   (let [len (alength xs)
         result (boolean-array (inc (* 2 len)))]
     (System/arraycopy xs 0 result 0 len)
@@ -27,11 +27,11 @@
     result))
 
 (defn- solve [required-size]
-  (let [^booleans data (->> (iterate dragon input)
-                            (drop-while #(< (alength ^booleans %) required-size))
-                            (first))
-        truncated-data (Arrays/copyOf data (int required-size))
-        csum           (->> (iterate checksum truncated-data)
+  (let [^booleans data (as-> (iterate dragon input) x
+                             (drop-while #(< (alength ^booleans %) required-size) x)
+                             (first x)
+                             (Arrays/copyOf x (int required-size))) ; truncate
+        csum           (->> (iterate checksum data)
                             (drop-while #(even? (alength ^booleans %)))
                             (first))]
     (apply str (map #(if % \1 \0) csum))))
