@@ -1,19 +1,18 @@
 (ns advent-of-code-2016.day18
   (:require [clojure.string :as str]))
 
-(defn- compute-next [prev]
-  (into []
-    (map-indexed
-      (fn [idx _]
+(set! *warn-on-reflection* true)
+
+(defn- compute-next [^booleans prev]
+  (amap prev idx ret
         (let [left (if (zero? idx)
-                     false (nth prev (dec idx)))
-              right (if (= (dec (count prev)) idx)
-                      false (nth prev (inc idx)))]
-          (not= left right))) ; the cases given boil down to just this check
-      prev)))
+                     false (aget prev (dec idx)))
+              right (if (= (dec (alength prev)) idx)
+                      false (aget prev (inc idx)))]
+          (not= left right)))) ; the cases given boil down to just this check
 
 (defn- solve [^String input num-rows]
-  (let [init-line (mapv #(case % \. false \^ true) (first (str/split input #"\R+")))
+  (let [init-line (boolean-array (map #(case % \. false \^ true) (first (str/split input #"\R+"))))
         lines (take num-rows (iterate compute-next init-line))]
     (reduce + (map #(count (filter false? %)) lines))))
 
