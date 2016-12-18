@@ -28,11 +28,11 @@
 
 (defn- solve [required-size]
   (let [^booleans data (->> (iterate dragon input)
-                            (remove #(< (alength ^booleans %) required-size))
+                            (drop-while #(< (alength ^booleans %) required-size))
                             (first))
         truncated-data (Arrays/copyOf data (int required-size))
         csum           (->> (iterate checksum truncated-data)
-                            (remove #(even? (alength ^booleans %)))
+                            (drop-while #(even? (alength ^booleans %)))
                             (first))]
     (apply str (map #(if % \1 \0) csum))))
 
