@@ -1,13 +1,13 @@
 (ns advent-of-code-2016.day8
   (:require [clojure.string :as str]))
 
-(def ^:private width 50)
+(def ^:private ^:const width 50)
 
-(def ^:private height 6)
+(def ^:private ^:const height 6)
 
-(def ^:private present \u2588)
+(def ^:private ^:const present \u2588)
 
-(def ^:private absent \space)
+(def ^:private ^:const absent \space)
 
 (defn- rect [w h state]
   (map-indexed

@@ -2,7 +2,7 @@
   (:import (java.nio ByteBuffer)
            (java.security MessageDigest)))
 
-(def ^:private magic "ahsbgdzn")
+(def ^:private ^:const magic "ahsbgdzn")
 
 (def ^:private ^:dynamic *zero-pad* false)
 

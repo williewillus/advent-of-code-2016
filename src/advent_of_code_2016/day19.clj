@@ -1,6 +1,6 @@
 (ns advent-of-code-2016.day19)
 
-(def ^:private input 3001330)
+(def ^:const ^:private input 3001330)
 
 (defn- solve-p1 [n]
   "Josephus problem (Numberphile Oct. 28): rotate MSB to LSB position"

@@ -1,7 +1,7 @@
 (ns advent-of-code-2016.day13
   (:require [clojure.data.priority-map :refer [priority-map]]))
 
-(def ^:private magic 1364)
+(def ^:private ^:const magic 1364)
 
 (defn- tile-type [[x y]]
   (let [hash (+ (* x x) (* 3 x) (* 2 x y) y (* y y) magic)]

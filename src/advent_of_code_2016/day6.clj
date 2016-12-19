@@ -1,7 +1,7 @@
 (ns advent-of-code-2016.day6
   (:require [clojure.string :as str]))
 
-(def ^:private input-len 8)
+(def ^:private ^:const input-len 8)
 
 (defn- max-val-key [m] (key (first (sort-by val #(compare %2 %1) m))))
 
