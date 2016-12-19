@@ -12,12 +12,8 @@
        (filter valid-triangle)
        (count)))
 
-(defn- transpose
-  [[[a1 b1 c1]
-    [a2 b2 c2]
-    [a3 b3 c3]]]
-
-  [[a1 a2 a3] [b1 b2 b3] [c1 c2 c3]])
+(defn- transpose [triple-of-triples]
+  [(map first triple-of-triples) (map second triple-of-triples) (map #(nth % 2) triple-of-triples)])
 
 (defn day3-2 [^String input]
   (->> (map to-triple (str/split input #"\R+"))
