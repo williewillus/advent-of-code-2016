@@ -1,29 +1,35 @@
 (ns advent-of-code-2016.day1)
 
-; unit vecs for north, east, south, west
-(def ^:private directions [[0 1] [1 0] [0 -1] [-1 0]])
+(def ^:private direction-vecs {:north [0 1] :east [1 0] :south [0 -1] :west [-1 0]})
 
-(defn- cw [dir] (mod (inc dir) 4))
+(defn- cw [dir]
+  (case dir
+    :north :east
+    :east :south
+    :south :west
+    :west :north))
 
-(defn- ccw [dir] (mod (dec dir) 4))
+(defn- ccw [dir]
+  (case dir
+    :north :west
+    :west :south
+    :south :east
+    :east :north))
 
-; "L1" => [ccw 1]
-(defn- convert-stringop [strop]
-  [(case (first strop)
-     \L ccw
-     \R cw)
+(defn- str->insn [strop]
+  [(case (first strop) \L ccw \R cw)
    (Long/parseLong (subs strop 1))])
 
 (defn- parse [^String input]
-  (map convert-stringop (re-seq #"[LR]\d+" input)))
+  (map str->insn (re-seq #"[LR]\d+" input)))
 
 (defn- move [[dir coord] [rotate amount]]
   (let [newdir  (rotate dir)
-        movevec (map (partial * amount) (nth directions newdir))]
-    [newdir (map + coord movevec)]))
+        move-vec (map (partial * amount) (direction-vecs newdir))]
+    [newdir (map + coord move-vec)]))
 
 (defn day1-1 [^String input]
-  (let [[x y] (second (reduce move [0 [0 0]] (parse input)))]
+  (let [[x y] (second (reduce move [:north [0 0]] (parse input)))]
     (+ (Math/abs x) (Math/abs y))))
 
 (defn- all-between [[x1 y1 :as start] [x2 y2]]
@@ -37,14 +43,14 @@
     (filter #(not= % start) result)))
 
 (defn day1-2 [^String input]
-  (let [path (map second (reductions move [0 [0 0]] (parse input)))
-        [x y] (loop [seen #{}
-                    [pos & ps] path]
+  (let [path (map second (reductions move [:north [0 0]] (parse input)))
+        [x y] (loop [seen? #{}
+                     [pos & ps] path]
                 (if-not (seq ps)
                   pos
                   (let [steps (all-between pos (first ps))]
-                    (if-let [seen-pos (some seen steps)]
+                    (if-let [seen-pos (some seen? steps)]
                       seen-pos
-                      (recur (apply conj seen steps) ps)))))]
+                      (recur (apply conj seen? steps) ps)))))]
     (println x y)
     (+ (Math/abs x) (Math/abs y))))
