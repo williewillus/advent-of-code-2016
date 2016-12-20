@@ -16,7 +16,7 @@
                     [[a1 b2] (+ banned (- b2 a2)) (+ allowed (- b1 a2))]) ; there's a gap
       :else (throw (IllegalStateException. "uh oh")))))
 
-(defn day20-2 [^String input]
+(defn day20 [^String input]
   (let [pairs (->> (str/split input #"\R+")
                    (map line->pair)
                    (cons [0 0])
