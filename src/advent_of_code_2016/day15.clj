@@ -9,6 +9,10 @@
         (conj acc #(zero? (mod (+ idx start %) period)))))
     [] lines))
 
-(defn day15 [^String input]
+(defn solve [^String input]
   (let [disk-preds (apply every-pred (parse-input (str/split input #"\R+")))]
-    (some #(when (disk-preds %) %) (range))))
+    (first (filter disk-preds (range)))))
+
+(defn day15-1 [^String input] (solve input))
+
+(defn day15-2 [^String input] (solve (str input "\nDisc #7 has 11 positions; at time=0, it is at position 0.")))
