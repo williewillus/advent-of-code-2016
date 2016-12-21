@@ -1,9 +1,12 @@
 (ns advent-of-code-2016.day21
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.math.combinatorics :as comb]))
 
 (set! *warn-on-reflection* true)
 
-(def ^:private ^:const password "abcdefgh")
+(def ^:private ^:const to-encode "abcdefgh")
+
+(def ^:private ^:const to-decode "fbgdceah")
 
 (defn- swap-pos [x y s]
   (let [xchar (nth s x)
@@ -28,8 +31,6 @@
         shift (+ idx 1 (if (>= idx 4) 1 0))]
     (rotate-right shift s)))
 
-(defn- inverse-rotate-pos [ch s] s)
-
 (defn- reverse-subseq [x y s]
   (str (subs s 0 x)
        (str/reverse (subs s x y))
@@ -42,40 +43,27 @@
            (.deleteCharAt ^int x)
            (.insert ^int y ^char ch)))))
 
-(defn- parse [inverse? line]
+(defn- parse [line]
   (condp #(str/starts-with? %2 %1) line
     "swap pos"     (let [[_ x y] (re-find #"swap position (\d+) with position (\d+)" line)]
                      (partial swap-pos (Long/parseLong x) (Long/parseLong y)))
     "swap letter"  (let [[_ xchar ychar] (re-find #"swap letter (\w) with letter (\w)" line)]
-                     (if inverse?
-                       (partial swap-letter (first ychar) (first xchar))
-                       (partial swap-letter (first xchar) (first ychar))))
+                     (partial swap-letter (first xchar) (first ychar)))
     "rotate left"  (let [[_ shift] (re-find #"rotate left (\d+) steps?" line)]
-                     (if inverse?
-                       (partial rotate-right (Long/parseLong shift))
-                       (partial rotate-left (Long/parseLong shift))))
+                     (partial rotate-left (Long/parseLong shift)))
     "rotate right" (let [[_ shift] (re-find #"rotate right (\d+) steps?" line)]
-                     (if inverse?
-                       (partial rotate-left (Long/parseLong shift))
-                       (partial rotate-right (Long/parseLong shift))))
+                     (partial rotate-right (Long/parseLong shift)))
     "rotate base"  (let [[_ ch] (re-find #"rotate based on position of letter (\w)" line)]
-                     (if inverse?
-                       (partial inverse-rotate-pos (first ch))
-                       (partial rotate-pos (first ch))))
+                     (partial rotate-pos (first ch)))
     "reverse"      (let [[_ x y] (re-find #"reverse positions (\d+) through (\d+)" line)]
                      (partial reverse-subseq (Long/parseLong x) (inc (Long/parseLong y)))) ; input gives inclusive upper
     "move"         (let [[_ x y] (re-find #"move position (\d+) to position (\d+)" line)]
-                     (if inverse?
-                       (partial move (Long/parseLong y) (Long/parseLong x))
-                       (partial move (Long/parseLong x) (Long/parseLong y))))
+                     (partial move (Long/parseLong x) (Long/parseLong y)))
     (throw (IllegalArgumentException. "Unknown op"))))
 
-(defn day21-1 [^String input]
-  (let [fns (map (partial parse false) (str/split input #"\R+"))
+(defn day21 [^String input]
+  (let [fns (map parse (str/split input #"\R+"))
         encode (reduce (fn [acc func] (comp func acc)) identity fns)]
-    (encode password)))
-
-(defn- day21-2 [^String input]
-  (let [fns (map (partial parse true) (str/split input #"\R+"))
-        decode (reduce (fn [acc func] (comp acc func)) identity fns)]
-    (decode password)))
+    (println to-encode "encodes to" (encode to-encode))
+    (let [perms (map (partial apply str) (comb/permutations to-decode))]
+      (println to-decode "decodes to" (some #(when (= to-decode (encode %)) %) perms)))))
