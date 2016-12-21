@@ -1,6 +1,6 @@
 (defproject advent_of_code_2016 "0.1.0-SNAPSHOT"
   :description "Advent of Code 2016 - williewillus"
-  :url "http://example.com/FIXME"
+  :url "http://github.com/williewillus/advent-of-code-2016"
   :license {:name "WTFPL-2.0"
             :url "http://www.wtfpl.net/about/"}
   :dependencies [
