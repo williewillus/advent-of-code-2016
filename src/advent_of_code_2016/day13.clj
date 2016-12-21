@@ -20,7 +20,7 @@
       (let [v (peek q)
             dist (seen v)]
         (cond
-          (= v goal) (str "Found goal at distance " dist)
+          (= v goal) seen
           (and (some? limit) (> dist limit)) within-limits
           :else (let [nb (neighbors v)
                       unseen-nb (remove seen nb)
@@ -32,6 +32,6 @@
                            within-limits)))))
       seen)))
 
-(defn day13-1 [] (bfs [1 1] [31 39] nil))
+(defn day13-1 [] (get (bfs [1 1] [31 39] nil) [31 39]))
 
 (defn day13-2 [] (count (bfs [1 1] nil 50)))
