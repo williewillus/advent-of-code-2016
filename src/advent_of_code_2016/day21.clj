@@ -11,10 +11,10 @@
     (apply str (map-indexed (fn [idx ch] (condp = idx x ychar y xchar ch)) s))))
 
 (defn- swap-letter [xchar ychar string]
-  (as-> string s
-        (str/replace s xchar \%)
-        (str/replace s ychar xchar)
-        (str/replace s \% ychar)))
+  (-> string
+      (str/replace xchar \%)
+      (str/replace ychar xchar)
+      (str/replace \% ychar)))
 
 (defn- rotate-left [sh s]
   (let [shift (mod sh (count s))]
@@ -30,11 +30,10 @@
 
 (defn- inverse-rotate-pos [ch s] s)
 
-; inclusive y!
 (defn- reverse-subseq [x y s]
   (str (subs s 0 x)
-       (str/reverse (subs s x (inc y)))
-       (subs s (inc y))))
+       (str/reverse (subs s x y))
+       (subs s y)))
 
 (defn- move [x y s]
   (let [ch (nth s x)]
@@ -44,7 +43,6 @@
            (.insert ^int y ^char ch)))))
 
 (defn- parse [inverse? line]
-  (println line)
   (condp #(str/starts-with? %2 %1) line
     "swap pos"     (let [[_ x y] (re-find #"swap position (\d+) with position (\d+)" line)]
                      (partial swap-pos (Long/parseLong x) (Long/parseLong y)))
@@ -65,7 +63,7 @@
                        (partial inverse-rotate-pos (first ch))
                        (partial rotate-pos (first ch))))
     "reverse"      (let [[_ x y] (re-find #"reverse positions (\d+) through (\d+)" line)]
-                     (partial reverse-subseq (Long/parseLong x) (Long/parseLong y)))
+                     (partial reverse-subseq (Long/parseLong x) (inc (Long/parseLong y)))) ; input gives inclusive upper
     "move"         (let [[_ x y] (re-find #"move position (\d+) to position (\d+)" line)]
                      (if inverse?
                        (partial move (Long/parseLong y) (Long/parseLong x))
