@@ -4,8 +4,6 @@
 
 (def ^:private ^booleans input (boolean-array (map #(= \1 %) "11110010111001001")))
 
-; (set! *warn-on-reflection* true)
-
 (defn- dragon [^booleans xs]
   ; Imperative version of: (concat xs [false] (map not (reverse xs)))
   (let [len (alength xs)
@@ -30,7 +28,7 @@
   (let [^booleans data (as-> (iterate dragon input) x
                              (drop-while #(< (alength ^booleans %) required-size) x)
                              (first x)
-                             (Arrays/copyOf x (int required-size))) ; truncate
+                             (Arrays/copyOf ^booleans x (int required-size))) ; truncate
         csum           (->> (iterate checksum data)
                             (drop-while #(even? (alength ^booleans %)))
                             (first))]

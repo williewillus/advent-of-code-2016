@@ -12,7 +12,6 @@
       "inc" (comp inc-pc (fn [state] (update state (keyword r1) inc)))
       "dec" (comp inc-pc (fn [state] (update state (keyword r1) dec)))
       "jnz" (if (re-matches #"\d+" r1)
-              ; todo dedupe this code
               (fn [state]                                    ; imm
                 (if (not (zero? (Long/parseLong r1)))
                   (update state :pc (partial + (Long/parseLong r2)))

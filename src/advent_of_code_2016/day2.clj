@@ -64,4 +64,3 @@
 (defn day2-1 [^String input] (solve basic-keypad 4 input))
 
 (defn day2-2 [^String input] (solve fancy-keypad 10 input))
-

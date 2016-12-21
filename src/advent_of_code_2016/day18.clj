@@ -1,8 +1,6 @@
 (ns advent-of-code-2016.day18
   (:require [clojure.string :as str]))
 
-(set! *warn-on-reflection* true)
-
 (defn- compute-next [^booleans prev]
   (amap prev idx ret
         (let [left (if (zero? idx)

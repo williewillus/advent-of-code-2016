@@ -12,7 +12,6 @@
 (defn- parse [in recurse?]
   (loop [len 0
          input in]
-    #_(println "input:" input)
     (if (empty? input)
       len
       (let [nm (until-next-marker input)]

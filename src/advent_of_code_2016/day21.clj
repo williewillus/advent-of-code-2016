@@ -2,8 +2,6 @@
   (:require [clojure.string :as str]
             [clojure.math.combinatorics :as comb]))
 
-(set! *warn-on-reflection* true)
-
 (def ^:private ^:const to-encode "abcdefgh")
 
 (def ^:private ^:const to-decode "fbgdceah")

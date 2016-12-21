@@ -13,8 +13,9 @@
   (map-indexed
     (fn [rownum row]
       (if (< rownum h)
-        (into [] (map-indexed (fn [colnum elem]
-                                (if (< colnum w) present elem)) row))
+        (into []
+          (map-indexed (fn [colnum elem]
+                         (if (< colnum w) present elem)) row))
         row))
     state))
 
@@ -22,17 +23,19 @@
   (let [shift (mod s height)
         old-col (map #(nth % c) state)
         rotated-col (concat (take-last shift old-col) (drop-last shift old-col))]
-    (into [] (map-indexed (fn [rownum row]
-                            (assoc row c (nth rotated-col rownum)))
-                          state))))
+    (into []
+      (map-indexed (fn [rownum row]
+                     (assoc row c (nth rotated-col rownum)))
+                   state))))
 
 (defn- rot-row [r s state]
   (let [shift (mod s width)]
-    (into [] (map-indexed (fn [rownum row]
-                            (if (= rownum r)
-                              (into [] (concat (take-last shift row) (drop-last shift row)))
-                              row))
-                          state))))
+    (into []
+      (map-indexed (fn [rownum row]
+                     (if (= rownum r)
+                       (into [] (concat (take-last shift row) (drop-last shift row)))
+                       row))
+                   state))))
 
 (defn- parse [line]
   (condp #(str/starts-with? %2 %1) line
