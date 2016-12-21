@@ -5,7 +5,6 @@
             :url "http://www.wtfpl.net/about/"}
   :dependencies [
                  [org.clojure/clojure "1.8.0"]
-                 [org.clojure/data.priority-map "0.0.7"]
                  [org.clojure/math.combinatorics "0.1.3"]
                  [org.clojure/core.async "0.2.395"]
                  ]

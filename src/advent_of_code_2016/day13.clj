@@ -1,44 +1,37 @@
 (ns advent-of-code-2016.day13
-  (:require [clojure.data.priority-map :refer [priority-map]]))
+  (:import (clojure.lang PersistentQueue)))
 
 (def ^:private ^:const magic 1364)
 
-(defn- tile-type [[x y]]
+(defn- is-open [[x y]]
   (let [hash (+ (* x x) (* 3 x) (* 2 x y) y (* y y) magic)]
-    (if (even? (Integer/bitCount hash))
-      :open
-      :wall)))
+    (even? (Integer/bitCount hash))))
 
 (defn- neighbors [[x y]]
-  (let [xp (inc x) xn (dec x)
-        yp (inc y) yn (dec y)]
-    (->> [[xp y] [x yn] [xn y] [x yp]]
-         (remove #(some neg? %))
-         (filter #(= :open (tile-type %))))))
+  (->> [[(inc x) y] [x (dec y)] [(dec x) y] [x (inc y)]]
+       (remove #(some neg? %))
+       (filter is-open)))
 
-; Dijkstra in Clojure adapted from http://www.ummels.de/2014/06/08/dijkstra-in-clojure/
+(defn- bfs [start goal limit]
+  (loop [q (conj PersistentQueue/EMPTY start)
+         seen {start 0}
+         within-limits #{start}]
+    (if (seq q)
+      (let [v (peek q)
+            dist (seen v)]
+        (cond
+          (= v goal) (str "Found goal at distance " dist)
+          (and (some? limit) (> dist limit)) within-limits
+          :else (let [nb (neighbors v)
+                      unseen-nb (remove seen nb)
+                      nb-dist (zipmap nb (repeat (inc dist)))]
+                  (recur (apply conj (pop q) unseen-nb)
+                         (merge-with min seen nb-dist)
+                         (if (and (some? limit) (<= dist limit))
+                           (conj within-limits v)
+                           within-limits)))))
+      seen)))
 
-(defn- map-vals [m f]
-  (into {}
-    (for [[k v] m]
-      [k (f v)])))
+(defn day13-1 [] (bfs [1 1] [31 39] nil))
 
-(defn- remove-keys [m pred]
-  (select-keys m (remove pred (keys m))))
-
-(defn- dijkstra [start nb]
-  (loop [q (priority-map start 0)
-         seen {}]
-    (if-let [[node dist-from-start] (peek q)]               ; if there is more on the queue
-      (let [new-distances
-            (-> (zipmap (nb node) (repeat 1))               ; take neighbors (assuming edge cost 1)
-                (remove-keys seen)                          ; without the ones we've seen
-                (map-vals (partial + dist-from-start)))]    ; get total distance from start by adding on this edge's cost
-        (recur
-          (merge-with min (pop q) new-distances)            ; pop this node off the queue then update distances by merging in new-distances, taking the min value if there are conflicts
-          (assoc seen node dist-from-start)))               ; update the seen map with [node, dist from start]
-      seen)))                                               ; if queue is empty, seen has all info
-
-; End Dijkstra
-
-(defn day13-1 [] (get (dijkstra [1 1] neighbors) [31 39]))
+(defn day13-2 [] (count (bfs [1 1] nil 50)))
