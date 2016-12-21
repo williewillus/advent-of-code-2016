@@ -1,47 +1,42 @@
 (ns advent-of-code-2016.day10
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.core.async :refer [<! >! <!! chan go]]))
 
-; state: { robotID(int) -> #{chips}, :outX -> #{chips} }
-; insn: { :bot robotID :low (robotID|:outX) :high (robotID|:outX) }
+(defn- key-from-type [type num]
+  (case type
+    "bot" (keyword (str "bot" (Long/parseLong num)))
+    "output" (keyword (str "out" (Long/parseLong num)))))
 
-(defn- take-chip [loc chip state]
-  (if (contains? state loc)
-    (update state loc (fn [old] (disj old chip)))
-    state))
+(defn- create-chans [^String input]
+  (let [matches (map (partial drop 1) (re-seq #"(bot|output) (\d+)" input))]
+    (loop [[[type num :as x] & xs] matches
+           chs (transient {})]
+      (if (seq x)
+        (let [k (key-from-type type num)]
+          (if-not (chs k)
+            (recur xs (assoc! chs k (chan 2)))
+            (recur xs chs)))
+        (persistent! chs)))))
 
-(defn- give-chip [loc chip state]
-  (update state loc (fn [old]
-                       (if (some? old) (conj old chip) #{chip}))))
+(defn day10 [^String input]
+  (let [chans (create-chans input)]
+    (doseq [line (str/split input #"\R+")]
+      (condp #(str/starts-with? %2 %1) line
+        "value" (let [[_ val bot] (re-find #"value (\d+) goes to bot (\d+)" line)]
+                  (go (>! (chans (key-from-type "bot" bot)) (Long/parseLong val))))
+        "bot" (let [[_ bot lotype lonum hitype hinum] (re-find #"bot (\d+) gives low to (bot|output) (\d+) and high to (bot|output) (\d+)" line)]
+                (go
+                  (let [ch (chans (key-from-type "bot" bot))
+                        n1 (<! ch) n2 (<! ch)
+                        max (max n1 n2) min (min n1 n2)
+                        loch (chans (key-from-type lotype lonum))
+                        hich (chans (key-from-type hitype hinum))]
+                    (when (and (= 17 min) (= 61 max))
+                      (println bot "is comparing 17 and 61"))
+                    (>! loch min)
+                    (>! hich max))))))
 
-(defn- create-location [s]
-  (cond
-    (str/starts-with? s "output ") (keyword (str "out" (subs s 7)))
-    (str/starts-with? s "bot ") (keyword (str "bot" (subs s 4)))))
-
-(defn- parse-line [insns line]
-  (if (str/starts-with? line "value")
-    (let [[_ ch b] (re-find #"value (\d+) goes to (bot \d+)" line)
-          chip (Long/parseLong ch)
-          bot (create-location b)]
-      (conj insns {:type :direct :chip chip :bot bot}))
-    (let [[_ bot lo hi] (re-find #"(bot \d+) gives low to (bot \d+|output \d+) and high to (bot \d+|output \d+)" line)]
-      (conj insns {:type :give :bot (create-location bot) :low (create-location lo) :high (create-location hi)}))))
-
-; fixme
-(defn- execute [state insn]
-  (let [{bot :bot lo-dest :low hi-dest :high} insn
-        bot-inv (bot state)
-        lo-chip (apply min bot-inv)
-        hi-chip (apply max bot-inv)]
-    (println insn bot-inv)
-    (when (and (= 17 lo-chip) (= 61 hi-chip))
-      (println bot "is comparing 17 and 61!"))
-    (->> state
-         (take-chip bot lo-chip)
-         (take-chip bot hi-chip)
-         (give-chip lo-dest lo-chip)
-         (give-chip hi-dest hi-chip))))
-
-(defn- day10-1 [^String input]
-  (let [insns (reduce parse-line [] (str/split input #"\R+"))]
-    (reduce execute {} insns)))
+    (let [o0 (<!! (chans :out0))
+          o1 (<!! (chans :out1))
+          o2 (<!! (chans :out2))]
+      (println "o0 x o1 x o2:" (* o0 o1 o2)))))

@@ -7,6 +7,7 @@
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/data.priority-map "0.0.7"]
                  [org.clojure/math.combinatorics "0.1.3"]
+                 [org.clojure/core.async "0.2.395"]
                  ]
   :main ^:skip-aot advent-of-code-2016.core ; todo actually make a core ns "launcher" for all days
   :target-path "target/%s"
