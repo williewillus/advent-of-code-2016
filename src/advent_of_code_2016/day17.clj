@@ -49,5 +49,5 @@
 (defn day17 []
   (let [paths (bfs [0 3] [3 0] magic)
         sorted (sort-by count paths)]
-    (println (first sorted))
+    (println (subs (first sorted) (count magic)))
     (println (- (count (last sorted)) (count magic)))))
