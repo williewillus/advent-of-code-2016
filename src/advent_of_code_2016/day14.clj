@@ -6,11 +6,14 @@
 
 (def ^:private ^:dynamic *zero-pad* false)
 
-(defn- md5-hash [^String s]
-  (->> (.getBytes s)
-       (.digest (MessageDigest/getInstance "MD5"))
-       (BigInteger. 1)
-       (format (if *zero-pad* "%032x" "%x"))))
+(let [md5 (MessageDigest/getInstance "MD5")]
+  (defn- md5-hash [^String s]
+    (.reset md5)
+    (.update md5 (.getBytes s))
+    (->> (.digest md5)
+         (BigInteger. 1)
+         (format (if *zero-pad* "%032x" "%x")))))
+
 
 (defn- many-hash [^String init]
   (nth (iterate md5-hash init) 2017))
