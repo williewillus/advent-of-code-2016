@@ -18,55 +18,26 @@
          (< c width)
          (not= \# ((layout r) c)))))
 
-
 (defn neighbors [layout pos]
   (->> [(up pos) (down pos) (left pos) (right pos)]
        (filter #(is-open layout %))))
 
-(defn bfs2
-  "BFS out from the given source node, returning {dest nodeid: distance}"
+(defn bfs
+  "BFS out from the given source position, returning {dest nodeid: distance}"
   [layout node-to-pos srcpos]
   (let [pos-to-node (clojure.set/map-invert node-to-pos)]
     (loop [q (conj clojure.lang.PersistentQueue/EMPTY srcpos)
-           seen {srcpos 0}]
+           dists {srcpos 0}]
       (if (seq q)
         (let [v (peek q)
-              dist (seen v)
+              dist (dists v)
               nb (neighbors layout v)
-              unseen-nbs (remove seen nb)
+              unseen-nbs (remove dists nb)
               nb-dist (zipmap nb (repeat (inc dist)))]
           (recur (apply conj (pop q) unseen-nbs)
-                 (merge-with min seen nb-dist)))
+                 (merge-with min dists nb-dist)))
         (into {}
-              (map (fn [[node pos]] [node (seen pos)]) node-to-pos))))))
-
-
-(defn add-unseen-nbs
-  [layout pos q seen dist]
-  (let [xf (comp
-            (filter #(and (not (seen %)) (is-open layout %)))
-            (map (fn [pos] [pos (inc dist)])))]
-    (into q xf [(up pos) (down pos) (left pos) (right pos)])))
-          
-(defn bfs
-  "BFS out from the given source node, returning {dest nodeid: distance}"
-  [layout node-to-pos srcpos]
-  (let [pos-to-node (clojure.set/map-invert node-to-pos)]
-    (println (str "BFS from " (pos-to-node srcpos)))
-    (loop [result (transient {})
-           q (conj clojure.lang.PersistentQueue/EMPTY [srcpos 0])
-           seen-pos (transient #{})]
-      (if (empty? q)
-        (do
-          (println "Seen poses:" (count seen-pos))
-          (persistent! result))
-        (let [[curpos curdist] (first q)
-              nextresult (if (some? (pos-to-node curpos))
-                           (assoc! result (pos-to-node curpos) curdist)
-                           result)
-              nextq (add-unseen-nbs layout curpos (pop q) seen-pos curdist)
-              nextseen (conj! seen-pos curpos)]
-          (recur nextresult nextq nextseen))))))
+              (map (fn [[node pos]] [node (dists pos)]) node-to-pos))))))
 
 (defn apsp
   "Perform all-pairs shortest path between all members of nodes, returning {src nodeid: {dest nodeid: distance}}"
@@ -90,15 +61,27 @@
     (reduce f [[] {} 0] (clojure.string/split-lines input))))
 
 (defn evaluate
-  [dists visit-order]
-  (->> (partition 2 1 visit-order)
-       (map (fn [[from to]] ((dists from) to)))
-       (apply +)))
+  [dists p2 visit-order]
+  (let [res (->> (partition 2 1 visit-order)
+                 (map (fn [[from to]]
+                        ((dists from) to)))
+                 (apply +))
+        zero-to-first ((dists 0) (first visit-order))
+        last-to-zero ((dists (last visit-order)) 0)]
+    (+ res zero-to-first (if p2 last-to-zero 0))))
 
 (defn p1 [input]
   (let [[layout nodes] (load-input input)
         dists (apsp layout nodes)]
-    (println "computed apsp" dists)
-    (->> (comb/permutations (into [] (keys nodes)))
-         (map (partial evaluate dists))
-         (apply min))))
+    (let [to-shuffle (into [] (filter #(not= 0 %) (keys nodes)))]
+      (->> (comb/permutations to-shuffle)
+           (map (partial evaluate dists false))
+           (apply min)))))
+
+(defn p2 [input]
+  (let [[layout nodes] (load-input input)
+        dists (apsp layout nodes)]
+    (let [to-shuffle (into [] (filter #(not= 0 %) (keys nodes)))]
+      (->> (comb/permutations to-shuffle)
+           (map (partial evaluate dists true))
+           (apply min)))))
